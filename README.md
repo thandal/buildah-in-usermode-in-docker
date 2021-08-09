@@ -1,41 +1,21 @@
-[![Build Status](https://travis-ci.org/weber-software/diuid.svg?branch=master)](https://travis-ci.org/weber-software/diuid)
+# Buildah in User-Mode Linux in Docker (BUMLD)
 
-# Docker in User Mode Linux
-
-An image for running a dockerd inside a user mode linux kernel.
-This way it is possible to run and build docker images without forwarding the docker socket or using privileged flags.
+An image for running buildah inside a user-mode linux kernel inside a docker container.
+This way it is possible to build docker images without forwarding the docker socket or using privileged flags.
 Therefore this image can be used to build docker images with the gitlab-ci-multi-runner docker executor.
 
 ## How it works
 
-It starts a user mode linux kernel with a dockerd inside.
+It starts a user-mode linux kernel with buildah inside.
 The network communication is bridged by slirp.
-I didn't managed to get the "redir" of slirp to work and so i'm forwarding the docker socket using reverse tunneling over an SSH connection from the uml kernel to the container.
-
-## Security
-
-Because uml linux is using ptrace the image might need to be started with `--cap-add=SYS_PTRACE` depending on your Docker version and kernel version. 
-[The flag is not needed since Docker 19.03+ with kernel 4.8+](https://github.com/moby/moby/pull/38137).
 
 ## Example
 
-`docker run -it --rm weberlars/diuid docker info`
+`docker run -it --rm bumld buildah --version`
 
 For better performance, mount a tmpfs with exec access on `/umlshm`:
 
 `docker run -it --rm --tmpfs /umlshm:rw,nosuid,nodev,exec,size=8g weberlars/diuid docker info`
-
-To set `dockerd` flags:
-
-`docker run -it --rm -e DIUID_DOCKERD_FLAGS="--experimental --debug" weberlars/diuid docker info`
-
-To run as a daemon and expose the API socket to other hosts:
-
-```
-docker run -d -p 2376:2376 -v /secret:/s \
- -e DIUID_DOCKERD_FLAGS="-H tcp://0.0.0.0:2376 --tlsverify --tlscacert /s/ca.pem --tlscert /s/cert.pem --tlskey /s/key.pem" \
- weblars/diuid tail -f /tmp/kernel.log
-```
 
 To configure memory size and `/var/lib/docker` size:
 
