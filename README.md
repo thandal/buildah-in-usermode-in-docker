@@ -11,6 +11,12 @@ The network communication is bridged by slirp.
 
 ## Example
 
+`docker build -t bumld .`
+
+`docker run bumld` -- will start UML, and use buildah to build example.Dockerfile and save it to /example.image inside the container.
+
+
+## TODO Examples
 `docker run -it --rm bumld buildah --version`
 
 For better performance, mount a tmpfs with exec access on `/umlshm`:
