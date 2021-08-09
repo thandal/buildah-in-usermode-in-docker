@@ -26,6 +26,7 @@ FROM debian:$DEBIAN_VERSION AS config_print
 COPY --from=kernel_build /KERNEL.config /KERNEL.CONFIG
 CMD ["cat", "/KERNEL.CONFIG"]
 
+
 # BUILD STAGE: Main: build the image that will contain the usermode kernel, buildah, etc.
 FROM debian:$DEBIAN_VERSION
 RUN \
@@ -34,13 +35,14 @@ RUN \
 	apt-transport-https ca-certificates gnupg2 software-properties-common
 
 # Install buildah
+# For older versions of debian (like buster), buildah is a testing package.
+#RUN echo 'deb http://deb.debian.org/debian testing main contrib non-free' >> /etc/apt/sources.list
 RUN \
 	apt update && \
 	apt install -y buildah
 
 # Install kernel and scripts
 COPY --from=kernel_build /out/linux /linux/linux
-COPY kernel.sh kernel.sh
 COPY entrypoint.sh entrypoint.sh
 COPY init.sh init.sh
 COPY example.Dockerfile /Dockerfile
