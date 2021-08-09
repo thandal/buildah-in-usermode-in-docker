@@ -49,15 +49,13 @@ COPY example.Dockerfile /Dockerfile
 
 # Resource limits for the uml kernel
 ENV MEM 2G
-ENV DISK 10G
+ENV DISK 5G
 
 # It is recommended to override /umlshm with
 # --tmpfs /umlshm:rw,nosuid,nodev,exec,size=8g
-ENV TMPDIR /umlshm
-VOLUME /umlshm
-
-# Disk image for /var/lib/container is created under this directory
-VOLUME /persistent
+#ENV TMPDIR /umlshm
+#VOLUME /umlshm
+ENV TMPDIR /tmp
 
 ENTRYPOINT [ "/entrypoint.sh" ]
 CMD [ "bash" ]
