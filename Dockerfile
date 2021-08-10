@@ -35,7 +35,6 @@ CMD ["cat", "/KERNEL.CONFIG"]
 
 # BUILD STAGE: Main: build the image that will contain the usermode kernel, buildah, etc.
 FROM debian:$DEBIAN_VERSION
-RUN echo 'deb http://deb.debian.org/debian testing main contrib non-free' >> /etc/apt/sources.list
 RUN \
   apt update && \
   apt install -y iproute2 wget slirp net-tools cgroupfs-mount psmisc rng-tools \
@@ -44,6 +43,7 @@ RUN \
 
 # Install buildah
 # For older versions of debian (like buster), buildah is a testing package.
+#RUN echo 'deb http://deb.debian.org/debian testing main contrib non-free' >> /etc/apt/sources.list
 RUN \
   apt update && \
   apt install -y buildah
@@ -52,6 +52,7 @@ RUN \
 COPY --from=kernel_build /out/linux /linux/linux
 COPY entrypoint.sh entrypoint.sh
 COPY init.sh init.sh
+# Use my own tame version of slirp that at least doesn't segfault when I try it from the command-line.
 #COPY slirp-fullbolt-stable slirp-fullbolt-stable
 COPY example.Dockerfile /Dockerfile
 
