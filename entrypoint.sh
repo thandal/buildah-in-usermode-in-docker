@@ -14,3 +14,4 @@ if [ ! -f /var_lib_containers.img ]; then
 fi
 
 /linux/linux rootfstype=hostfs rw eth0=slirp,,/usr/bin/slirp-fullbolt mem=$MEM init=/init.sh
+#/linux/linux rootfstype=hostfs rw eth0=slirp,,/slirp-fullbolt-stable mem=$MEM init=/init.sh 2>&1

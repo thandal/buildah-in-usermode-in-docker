@@ -3,11 +3,13 @@ set -xu
 # UML black magic to make things play nice with rootfstype=hostfs
 mount -t proc proc /proc/
 mount -t sysfs sys /sys/
-#mount -t tmpfs none /run
+# TODO remove /run?
+mount -t tmpfs none /run
 mkdir /dev/pts
 mount -t devpts devpts /dev/pts
 rm /dev/ptmx
 ln -s /dev/pts/ptmx /dev/ptmx
+
 rngd -r /dev/urandom
 
 # Set up networking
@@ -15,6 +17,11 @@ ip link set dev lo up
 ip link set dev eth0 up
 route add default dev eth0
 ifconfig eth0 10.0.2.15
+
+# Alternative network setup...
+# 10.0.2.2 is a special slirp host alias
+#ifconfig eth0 10.0.2.15 up
+#route add default gw 10.0.2.2
 
 # Don't really need the ext4 volume, but if I just try using a tmpfs, then
 # buildah croaks with errors related to overlayfs...
