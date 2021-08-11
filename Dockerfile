@@ -1,8 +1,9 @@
 ARG DEBIAN_VERSION=testing
-# For some reason I can't track down, slirp networking just doesn't work with a buster container host! :(
+# For some reason I can't track down, slirp networking just doesn't work with a
+# buster container host! :(
 #ARG DEBIAN_VERSION=stable
-#ARG KERNEL_VERSION=5.2
 ARG KERNEL_VERSION=5.10
+
 
 # BUILD STAGE: Kernel: build the usermode kernel!
 FROM debian:$DEBIAN_VERSION as kernel_build
@@ -24,7 +25,7 @@ RUN mkdir /out && cp -f linux /out/linux
 RUN cp .config /KERNEL.config
 
 
-# BUILD STAGE: utility to print kernel config
+# BUILD STAGE: utility to update the kernel config.
 # Usage:
 #   docker build -t kernel_config_print --target config_print . && \
 #   docker run -it --rm kernel_config_print > KERNEL.config
@@ -33,17 +34,18 @@ COPY --from=kernel_build /KERNEL.config /KERNEL.CONFIG
 CMD ["cat", "/KERNEL.CONFIG"]
 
 
-# BUILD STAGE: Main: build the image that will contain the usermode kernel, buildah, etc.
+# BUILD STAGE: Main: build the image that will contain the usermode kernel,
+# buildah, etc.
 FROM debian:$DEBIAN_VERSION
 RUN \
   apt update && \
   apt install -y iproute2 wget slirp net-tools cgroupfs-mount psmisc rng-tools \
-  apt-transport-https ca-certificates gnupg2 software-properties-common telnet
+  apt-transport-https ca-certificates gnupg2 software-properties-common telnet iputils-ping
 # TODO remote telnet and maybe a couple of other unecessary tools?
 
 # Install buildah
 # For older versions of debian (like buster), buildah is a testing package.
-#RUN echo 'deb http://deb.debian.org/debian testing main contrib non-free' >> /etc/apt/sources.list
+RUN echo 'deb http://deb.debian.org/debian testing main contrib non-free' >> /etc/apt/sources.list
 RUN \
   apt update && \
   apt install -y buildah
